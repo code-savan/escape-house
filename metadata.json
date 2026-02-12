@@ -1,0 +1,7 @@
+{
+  "name": "Escape House Spa",
+  "description": "A 24-hour luxury spa sanctuary in Maitama, Abuja, offering refined relaxation and premium wellness treatments.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
