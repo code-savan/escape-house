@@ -8,8 +8,8 @@ const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   
-  // Calculate if we are on the home page for transparency logic
-  const isHomePage = location.pathname === '/' || location.pathname === '';
+  // Robust check for Home page across different potential URL structures
+  const isHomePage = location.pathname === '/' || location.pathname === '' || location.pathname.includes('index.html');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,9 +27,9 @@ const Navbar: React.FC = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
-  // The nav is dark if:
-  // 1. We are NOT on the home page (it should be dark on subpages from load)
-  // 2. We are on the home page but have scrolled down
+  // The nav is "dark mode" (white bg, dark text) if:
+  // 1. We are on any page that IS NOT the Home page
+  // 2. We are on the Home page but have scrolled down
   const isDarkNav = !isHomePage || scrolled;
 
   return (
