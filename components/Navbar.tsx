@@ -7,13 +7,15 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
+  
+  // Calculate if we are on the home page for transparency logic
+  const isHomePage = location.pathname === '/' || location.pathname === '';
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -25,9 +27,9 @@ const Navbar: React.FC = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
-  // Logic for navbar appearance: 
-  // - On non-home pages: always white bg, dark text.
-  // - On home page: transparent bg/white text until scroll, then white bg/dark text.
+  // The nav is dark if:
+  // 1. We are NOT on the home page (it should be dark on subpages from load)
+  // 2. We are on the home page but have scrolled down
   const isDarkNav = !isHomePage || scrolled;
 
   return (
@@ -41,19 +43,22 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`text-sm uppercase tracking-widest transition-colors duration-300 ${
-                  location.pathname === link.path 
-                    ? (isDarkNav ? 'text-spa-stone font-semibold' : 'text-white font-semibold') 
-                    : (isDarkNav ? 'text-spa-accent hover:text-spa-stone' : 'text-stone-300 hover:text-white')
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path;
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`text-sm uppercase tracking-widest transition-colors duration-300 ${
+                    isActive 
+                      ? (isDarkNav ? 'text-spa-stone font-semibold border-b border-spa-stone/30' : 'text-white font-semibold border-b border-white/30') 
+                      : (isDarkNav ? 'text-spa-accent hover:text-spa-stone' : 'text-stone-300 hover:text-white')
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
             <a href="tel:08099224450" className={`flex items-center gap-2 px-4 py-2 rounded-sm border transition-all duration-300 ${isDarkNav ? 'border-spa-stone text-spa-stone hover:bg-spa-stone hover:text-white' : 'border-white text-white hover:bg-white hover:text-spa-stone'}`}>
               <Phone size={14} />
               <span className="text-sm font-medium">08099224450</span>
@@ -73,7 +78,7 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile Nav */}
-      <div className={`md:hidden absolute top-full left-0 w-full bg-white transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-screen border-b border-stone-100 shadow-xl' : 'max-h-0'}`}>
+      <div className={`md:hidden absolute top-full left-0 w-full bg-white transition-all duration-300 shadow-xl overflow-hidden ${isOpen ? 'max-h-screen' : 'max-h-0'}`}>
         <div className="px-4 pt-4 pb-8 space-y-4">
           {navLinks.map((link) => (
             <Link
